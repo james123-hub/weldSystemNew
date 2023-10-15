@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Result</title>
+    <style>
+        .container {
+            width: 800px;
+            margin: 0 auto;
+        }
+        .adjustment-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .image-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 400px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Image Result</h1>
+        <div class="adjustment-wrapper">
+            <div class="adjustment-panel">
+                <label for="contrast">对比度：</label>
+                <input type="range" id="contrast-slider" name="contrast" min="0.0" max="2.0" step="0.1" value="1.0"><br>
+                <label for="saturation">饱和度：</label>
+                <input type="range" id="saturation-slider" name="saturation" min="0.0" max="2.0" step="0.1" value="1.0"><br>
+                <label for="brightness">亮度：</label>
+                <input type="range" id="brightness-slider" name="brightness" min="-100" max="100" step="10" value="0"><br>
+                <label for="gaussian">高斯滤波程度：</label>
+                <input type="range" id="gaussian-slider" name="gaussian" min="0.0" max="10.0" step="0.1" value="0.0"><br>
+                <!-- 添加其他调整项的滑块输入框 -->
+            </div>
+            <div class="image-wrapper">
+                <div>
+                    <p>Original Image</p>
+                    <img src="{{ image_path }}" alt="Original Image">
+                </div>
+                <div>
+                    <p>Processed Image</p>
+                    <img src="{{ processed_image_path }}" alt="Processed Image">
+                </div>
+            </div>
+        </div>
+        <form method="POST" action="/">
+            {% csrf_token %}
+            <input type="submit" value="Save Image">
+        </form>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // 初始化调整面板
+            $('.adjustment-panel input[type="range"]').on('input', function() {
+                var brightness = $('#brightness-slider').val();
+                var contrast = $('#contrast-slider').val();
+                var saturation = $('#saturation-slider').val();
+                var gaussian = $('#gaussian').val();
+                // 发送AJAX请求，更新处理后的图片
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: {
+                        brightness: brightness,
+                        contrast: contrast,
+                        saturation: saturation,
+                        gaussian: gaussian,
+                        // 添加其他调整项的数值
+                    },
+                    success: function(response) {
+                        var processedImage = $('.image-wrapper div:nth-child(2) img');
+                        processedImage.attr('src', response.processed_image_path);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
