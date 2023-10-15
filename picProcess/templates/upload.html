@@ -1,16 +1,35 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Upload</title>
+    <title>Upload Image</title>
+    <style>
+        .container {
+            width: 800px;
+            margin: 0 auto;
+        }
+        .image-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        img {
+            max-width: 400px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 <body>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">检测</button>
-    </form>
+    <div class="container">
+        <h1>Upload Image</h1>
+        <form method="POST" enctype="multipart/form-data" action="/">
+            {% csrf_token %}
+            <input type="file" name="image">
+            <br>
+            <input type="submit" value="Upload">
+        </form>
+    </div>
 </body>
 </html>
