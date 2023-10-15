@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>图片处理</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $.ajaxSetup({
+ 　　　　data: {csrfmiddlewaretoken: '{{ csrf_token }}'}
+ 　　    })
+        $(document).ready(function() {
+            // 上传图片
+            $("input[name='upload']").change(function(event) {
+                var file = event.target.files[0];
+                var reader = new FileReader();
+
+                reader.onload = function(e) {
+                    var imageUrl = e.target.result;
+                    $("img#original-image").attr("src", imageUrl);
+                    showAdjustmentPanel(); // 显示参数调整面板
+                    processImage(imageUrl);
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+            // 处理图片
+            function processImage(imageUrl) {
+                var contrast = $("input[name='contrast']").val();
+                var saturation = $("input[name='saturation']").val();
+                var brightness = $("input[name='brightness']").val();
+                var gaussian = $("input[name='gaussian']").val();
+
+                $.post("/process/", { imageUrl: imageUrl, contrast: contrast, saturation: saturation, brightness: brightness, gaussian: gaussian }, function(data) {
+                    $("img#processed-image").attr("src", data);
+                });
+            }
+
+            // 显示参数调整面板
+            function showAdjustmentPanel() {
+                $("div#adjustment-panel").show();
+            }
+
+            // 调整参数时重新处理图片
+            $("input[name='contrast'], input[name='saturation'], input[name='brightness'], input[name='gaussian']").on("input", function() {
+                var imageUrl = $("img#original-image").attr("src");
+                processImage(imageUrl);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>图片处理</h1>
+    <label for="upload">上传图片：</label>
+    <input type="file" name="upload"><br><br>
+    <div id="adjustment-panel" style="display: none;">
+        <div>
+            <label for="contrast">对比度：</label>
+            <input type="range" name="contrast" min="0.0" max="2.0" step="0.1" value="1.0"><br>
+            <label for="saturation">饱和度：</label>
+            <input type="range" name="saturation" min="0.0" max="2.0" step="0.1" value="1.0"><br>
+            <label for="brightness">亮度：</label>
+            <input type="range" name="brightness" min="-100" max="100" step="10" value="0"><br>
+            <label for="gaussian">高斯滤波程度：</label>
+            <input type="range" name="gaussian" min="0.0" max="10.0" step="0.1" value="0.0"><br>
+        </div>
+        <br>
+    </div>
+    <div>
+        <h3>原始图片：</h3>
+        <img id="original-image" src="" alt="">
+    </div>
+    <br>
+    <div>
+        <h3>处理后图片：</h3>
+        <img id="processed-image" src="" alt="">
+    </div>
+</body>
+</html>
