@@ -1,6 +1,4 @@
 from django.db import models
-
 # Create your models here.
 class Image(models.Model):
-    photo = models.ImageField(upload_to='pics')
-    processed_image = models.ImageField(upload_to='processed_images/', null=True, blank=True)
+    image = models.ImageField(upload_to='pics')
